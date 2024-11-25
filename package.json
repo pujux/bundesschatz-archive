@@ -1,0 +1,14 @@
+{
+  "name": "bundesschatz-archive",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "This project collects and displays historic return rates from bonds available at https://bundesschatz.at",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Julian Pufler",
+  "license": "MIT",
+  "dependencies": {
+    "jsdom": "^25.0.1"
+  }
+}
