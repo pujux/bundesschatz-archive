@@ -1,4 +1,4 @@
-import { appendFileSync } from "fs";
+const fs = require("fs");
 
 async function fetchData() {
   try {
@@ -19,11 +19,13 @@ async function fetchData() {
 
       const { date, interestRate } = interestRates[0];
 
-      csvContent += `"${productKey}","${periodInterval}","${periodValue}","${date}","${interestRate}"\n`;
+      csvContent += `"${productKey}","${periodInterval}","${periodValue}","${date}","${Number(interestRate).toFixed(2)}","${
+        productDisplayInfo.green
+      }"\n`;
     }
 
     const csvFilePath = "bundesschatz.csv";
-    appendFileSync(csvFilePath, csvContent, {});
+    fs.appendFileSync(csvFilePath, csvContent);
 
     console.log("Data fetched and appended to CSV successfully.");
   } catch (error) {
