@@ -18,7 +18,7 @@ export function StatsCards({ data, selectedBonds }: StatsCardsProps) {
           return (
             <Card key={bond} className="relative flex-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="min-w-[127px] text-3xl whitespace-nowrap font-extrabold tk-halyard-display">
+                <CardTitle className="min-w-[127px] text-3xl whitespace-nowrap font-extrabold">
                   {BOND_TYPES.find((b) => b.value === bond)?.label}
                 </CardTitle>
               </CardHeader>
