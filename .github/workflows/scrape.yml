@@ -22,7 +22,7 @@ jobs:
 
       - name: Fetch and save data
         run: |
-          node ./data-fetcher/index.js
+          node ./data-fetcher/index.cjs
 
       - name: Commit changes
         run: |

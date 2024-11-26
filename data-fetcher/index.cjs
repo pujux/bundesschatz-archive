@@ -10,7 +10,7 @@ async function fetchData() {
 
     for (const product of data) {
       const { productDisplayInfo, interestRates } = product;
-      const { productKey, periodInterval, periodValue } = productDisplayInfo;
+      const { productKey, periodInterval, periodValue, green } = productDisplayInfo;
 
       if (interestRates.length === 0) {
         console.warn(`No interest rates found for product ${productKey}`);
@@ -19,9 +19,7 @@ async function fetchData() {
 
       const { date, interestRate } = interestRates[0];
 
-      csvContent += `"${productKey}","${periodInterval}","${periodValue}","${date}","${Number(interestRate).toFixed(2)}","${
-        productDisplayInfo.green
-      }"\n`;
+      csvContent += '"' + [productKey, periodInterval, periodValue, date, interestRate, green].join('","') + '"\n';
     }
 
     const csvFilePath = "bundesschatz.csv";
