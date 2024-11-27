@@ -11,9 +11,10 @@ import { format, Locale } from "date-fns";
 interface DateRangePickerProps {
   date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
+  onReset?: () => void;
 }
 
-export function DateRangePicker({ date, setDate }: DateRangePickerProps) {
+export function DateRangePicker({ date, setDate, onReset }: DateRangePickerProps) {
   return (
     <div className="grid gap-2">
       <Popover>
@@ -35,6 +36,11 @@ export function DateRangePicker({ date, setDate }: DateRangePickerProps) {
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="end">
           <Calendar autoFocus timeZone="UTC" mode="range" defaultMonth={date?.from} selected={date} onSelect={setDate} numberOfMonths={2} />
+          {onReset && (
+            <Button variant="outline" onClick={onReset} className="text-xs absolute m-[0_auto] left-0 right-0 top-3.5 w-14 h-7">
+              Reset
+            </Button>
+          )}
         </PopoverContent>
       </Popover>
     </div>

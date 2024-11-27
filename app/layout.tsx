@@ -1,12 +1,13 @@
-import "./globals.css";
 import type { Metadata } from "next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Navigation from "@/components/navigation";
 import { BondProvider } from "@/hooks/bond-context";
 import { cn } from "@/lib/utils";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Bundesschatz Archiv",
-  description: "",
+  title: "Bundesschatz Archive",
+  description: "Historic return rates from bonds available at https://bundesschatz.at",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,10 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={cn("bg-slate-50")}>
-        <BondProvider>
-          <Navigation />
-          {children}
-        </BondProvider>
+        <NuqsAdapter>
+          <BondProvider>
+            <Navigation />
+            {children}
+          </BondProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

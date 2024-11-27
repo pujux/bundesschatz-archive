@@ -1,8 +1,13 @@
 import Dashboard from "@/components/dashboard/dashboard";
 import { parseCSV } from "@/lib/csv-data";
+import { Suspense } from "react";
 
 export default async function Home() {
   const data = await parseCSV();
 
-  return <Dashboard data={data} />;
+  return (
+    <Suspense>
+      <Dashboard data={data} />
+    </Suspense>
+  );
 }
