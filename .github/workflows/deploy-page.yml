@@ -3,6 +3,8 @@ name: Deploy to Pages
 on:
   push:
     branches: ["main"]
+  repository_dispatch:
+    types: ["deploy-page"]
   workflow_dispatch:
 
 permissions:
