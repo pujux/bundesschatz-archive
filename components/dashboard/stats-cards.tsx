@@ -1,8 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { BOND_TYPES, BondData, BondKey, cn } from "@/lib/utils";
+import { BOND_TYPES, BondData, BondKey } from "@/lib/utils";
 
 interface StatsCardsProps {
   data: BondData[];
@@ -24,7 +23,7 @@ export function StatsCards({ data, selectedBonds }: StatsCardsProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-xl whitespace-nowrap text-[#c8102e] font-semibold">
-                  {data[0][bond].toFixed(2)}% <span className="text-sm font-normal">p.a.</span>
+                  {data.at(-1)![bond].toFixed(2)}% <span className="text-sm font-normal">p.a.</span>
                 </div>
               </CardContent>
             </Card>
