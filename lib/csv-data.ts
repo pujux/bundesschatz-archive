@@ -34,12 +34,23 @@ function transformCSVData(data: CSVData[]): BondData[] {
   return transformedData;
 }
 
+export async function getLastModified() {
+  try {
+    const csvPath = path.join(process.cwd(), "bundesschatz.csv");
+    const metadata = await fs.stat(csvPath);
+    return metadata.mtime;
+  } catch (error) {
+    console.error("Error reading CSV metadata:", error);
+    return new Date(0);
+  }
+}
+
 export async function parseCSV() {
   try {
     const csvPath = path.join(process.cwd(), "bundesschatz.csv");
     const fileContent = await fs.readFile(csvPath, "utf-8");
 
-    return new Promise<BondData[]>((resolve, reject) => {
+    return await new Promise<BondData[]>((resolve, reject) => {
       parse(
         fileContent,
         {

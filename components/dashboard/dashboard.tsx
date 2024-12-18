@@ -54,7 +54,7 @@ export default function Dashboard({ data }: DashboardProps) {
   }, [data, dateRange]);
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 max-w-7xl mx-auto">
+    <div className="flex-1 space-y-4 p-4 md:p-8 py-6 max-w-7xl mx-auto">
       <StatsCards data={data} selectedBonds={selectedBonds} />
 
       <Tabs defaultValue={tab} className="space-y-4" onValueChange={(value) => setTab(value)}>

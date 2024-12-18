@@ -4,6 +4,7 @@ import Navigation from "@/components/navigation";
 import { BondProvider } from "@/hooks/bond-context";
 import { cn } from "@/lib/utils";
 import "./globals.css";
+import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Bundesschatz Archive",
@@ -21,7 +22,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NuqsAdapter>
           <BondProvider>
             <Navigation />
-            {children}
+            <main className="flex-1">{children}</main>
+            <Footer />
           </BondProvider>
         </NuqsAdapter>
       </body>
