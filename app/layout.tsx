@@ -18,11 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={cn("bg-slate-50")}>
+      <body className="min-h-screen flex flex-col bg-slate-50">
         <NuqsAdapter>
           <BondProvider>
             <Navigation />
-            <main className="flex-1">{children}</main>
+            {children}
             <Footer />
           </BondProvider>
         </NuqsAdapter>
