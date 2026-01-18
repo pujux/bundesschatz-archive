@@ -1,13 +1,15 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BOND_TYPES, BondData } from "@/lib/utils";
+import { BOND_TYPES, type BondData } from "@/lib/utils";
+import type { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<BondData>[] = [
+export const columns: ColumnDef<BondData, Date | string>[] = [
   {
+    id: "Date",
     accessorKey: "Date",
+    accessorFn: (row) => row.Date,
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">

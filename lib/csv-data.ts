@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { parse } from "csv-parse";
 import path from "path";
-import { BondData, BondKey } from "./utils";
+import type { BondData, BondKey } from "./utils";
 
 type CSVData = {
   "Product Key": string;
@@ -58,12 +58,12 @@ export async function parseCSV() {
           skip_empty_lines: true,
           trim: true,
         },
-        (err, data) => {
+        (err, data: CSVData[]) => {
           if (err) {
             reject(err);
           }
           resolve(transformCSVData(data));
-        }
+        },
       );
     });
   } catch (error) {

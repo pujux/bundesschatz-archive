@@ -1,33 +1,33 @@
 "use client";
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getSortedRowModel, SortingState, getPaginationRowModel } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable, getSortedRowModel, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { columns } from "./columns";
+import { DEFAULT_BONDS, type BondData, type BondKey } from "@/lib/utils";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  data: BondData[];
+  selectedBonds: BondKey[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+export function DataTable({ data, selectedBonds }: DataTableProps) {
+  "use no memo"; // Tanstack Table
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table hook is safe here.
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
     state: {
-      sorting,
+      columnVisibility: DEFAULT_BONDS.reduce((acc, key) => ({ ...acc, [key]: selectedBonds.includes(key) }), {}),
     },
     initialState: {
-      pagination: {
-        pageSize: 7,
-      },
+      pagination: { pageSize: 8 },
+      sorting: [{ id: "Date", desc: true }],
     },
   });
 
@@ -50,7 +50,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="py-3.5">
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="text-center">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

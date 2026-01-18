@@ -1,7 +1,5 @@
-"use client";
-
 import { CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -9,8 +7,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 
 interface DateRangePickerProps {
-  date: DateRange | undefined;
-  setDate: (date: DateRange | undefined) => void;
+  date: DateRange;
+  setDate: (date: DateRange) => void;
   onReset?: () => void;
 }
 
@@ -35,7 +33,17 @@ export function DateRangePicker({ date, setDate, onReset }: DateRangePickerProps
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="end">
-          <Calendar autoFocus timeZone="UTC" mode="range" defaultMonth={date?.from} selected={date} onSelect={setDate} numberOfMonths={2} />
+          <Calendar
+            required
+            autoFocus
+            timeZone="UTC"
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={setDate}
+            numberOfMonths={2}
+            weekStartsOn={1}
+          />
           {onReset && (
             <Button variant="outline" onClick={onReset} className="text-xs absolute m-[0_auto] left-0 right-0 top-3.5 w-14 h-7">
               Reset
