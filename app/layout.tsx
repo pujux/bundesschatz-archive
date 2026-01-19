@@ -12,8 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <script defer src="https://cloud.umami.is/script.js" data-website-id="493778c3-89f0-4689-b635-228a6788d8e4" />
       </head>
       <body className="min-h-screen flex flex-col bg-slate-50">
         {children}
