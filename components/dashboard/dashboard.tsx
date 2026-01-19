@@ -1,32 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { DataTable } from "./data-table";
-import { columns } from "./columns";
 import { DateRangePicker } from "./date-range-picker";
 import { StatsCards } from "./stats-cards";
-import { BOND_TYPES, BondData } from "@/lib/utils";
-import { useBondContext } from "@/hooks/bond-context";
+import { BOND_TYPES, type BondData } from "@/lib/utils";
 import { format } from "date-fns";
-import { parseAsString, useQueryState, createParser, useQueryStates } from "nuqs";
+import { useBondQueryState, useDateRangeQueryState, useTabQueryState } from "@/hooks/query-state";
 
 type DashboardProps = {
-  data: BondData[];
+  dataPromise: Promise<BondData[]>;
 };
 
-const dateParser = createParser({
-  eq: (a: Date, b: Date) => a.getTime() === b.getTime(),
-  parse: (value) => {
-    const date = new Date(+value);
-    return !isNaN(date.getTime()) ? date : null;
-  },
-  serialize: (value) => new Date(value.toDateString()).getTime().toString(),
-});
+export function Dashboard({ dataPromise }: DashboardProps) {
+  const data = use(dataPromise);
 
-export default function Dashboard({ data }: DashboardProps) {
   const defaultRange = useMemo(() => {
     return {
       from: new Date(new Date(data[0].Date).toDateString()),
@@ -34,12 +25,9 @@ export default function Dashboard({ data }: DashboardProps) {
     };
   }, [data]);
 
-  const { selectedBonds } = useBondContext();
-  const [tab, setTab] = useQueryState("tab", parseAsString.withDefault("chart"));
-  const [dateRange, setDateRange] = useQueryStates({
-    from: dateParser.withDefault(defaultRange.from),
-    to: dateParser.withDefault(defaultRange.to),
-  });
+  const [selectedBonds] = useBondQueryState();
+  const [tab, setTab] = useTabQueryState();
+  const [dateRange, setDateRange] = useDateRangeQueryState(defaultRange);
 
   const rangeData = useMemo(() => {
     return data.filter((item) => {
@@ -54,11 +42,18 @@ export default function Dashboard({ data }: DashboardProps) {
   }, [data, dateRange]);
 
   return (
-    <main className="flex-grow w-full space-y-4 p-4 md:p-8 py-6 max-w-7xl mx-auto">
-      <StatsCards data={data} selectedBonds={selectedBonds} />
+    <main className="grow w-full space-y-4 p-4 md:p-8 py-6 max-w-7xl mx-auto">
+      <StatsCards data={data} />
 
-      <Tabs defaultValue={tab} className="space-y-4" onValueChange={(value) => setTab(value)}>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row items-start sm:items-center justify-between">
+      <Tabs
+        defaultValue={tab}
+        onValueChange={(value) => {
+          if (value === "chart" || value === "table") {
+            setTab(value);
+          }
+        }}
+      >
+        <div className="flex flex-col-reverse gap-2 sm:flex-row items-start sm:items-center justify-between mb-4">
           <TabsList>
             <TabsTrigger value="chart">Chart</TabsTrigger>
             <TabsTrigger value="table">Table</TabsTrigger>
@@ -73,9 +68,9 @@ export default function Dashboard({ data }: DashboardProps) {
           />
         </div>
 
-        <TabsContent value="chart" className="space-y-4">
+        <TabsContent value="chart">
           <Card className="p-2 sm:p-6">
-            <ResponsiveContainer width="100%" height={500}>
+            <ResponsiveContainer width="100%" height={491.5}>
               <LineChart data={rangeData} margin={{ top: 15, right: 40, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="Date" tickFormatter={(value) => format(new Date(value), "LLL dd, y")} />
@@ -85,11 +80,9 @@ export default function Dashboard({ data }: DashboardProps) {
                   formatter={(value, name) => [value, BOND_TYPES.find((b) => b.value === name)?.label]}
                 />
                 <Legend formatter={(value) => BOND_TYPES.find((bond) => bond.value === value)?.label} />
-                {selectedBonds
-                  .sort((a, b) => BOND_TYPES.findIndex((bond) => bond.value === a) - BOND_TYPES.findIndex((bond) => bond.value === b))
-                  .map((bond, index) => (
-                    <Line key={bond} type="monotone" dataKey={bond} stroke={`hsl(var(--chart-${(index % 5) + 1}))`} strokeWidth={2} dot={false} />
-                  ))}
+                {selectedBonds.map((bond, index) => (
+                  <Line key={bond} type="monotone" dataKey={bond} stroke={`hsl(var(--chart-${(index % 5) + 1}))`} strokeWidth={2} dot={false} />
+                ))}
               </LineChart>
             </ResponsiveContainer>
           </Card>
@@ -97,7 +90,7 @@ export default function Dashboard({ data }: DashboardProps) {
 
         <TabsContent value="table">
           <Card>
-            <DataTable columns={columns} data={rangeData} />
+            <DataTable data={rangeData} selectedBonds={selectedBonds} />
           </Card>
         </TabsContent>
       </Tabs>

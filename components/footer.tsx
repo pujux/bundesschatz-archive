@@ -1,9 +1,9 @@
+import { LastUpdated } from "@/components/last-updated";
 import { getLastModified } from "@/lib/csv-data";
-import { formatRelative } from "date-fns";
 import { Github, Linkedin } from "lucide-react";
 import Link from "next/link";
 
-export default async function Footer() {
+export async function Footer() {
   const lastModified = await getLastModified();
 
   return (
@@ -28,7 +28,7 @@ export default async function Footer() {
               className="text-muted-foreground hover:text-[#c8102e] transition-colors border-2 border-muted-foreground hover:border-[#c8102e] rounded-lg p-0.5 flex items-center"
               aria-label="Visit Julian Pufler's GitHub profile"
             >
-              <Github className="h-5 w-5" />
+              <Github className="h-5 w-5 mt-px ml-px" />
             </Link>
           </li>
           <li>
@@ -38,13 +38,11 @@ export default async function Footer() {
               className="text-muted-foreground hover:text-[#c8102e] transition-colors border-2 border-muted-foreground hover:border-[#c8102e] rounded-lg p-0.5 flex items-center"
               aria-label="Visit Julian Pufler's LinkedIn profile"
             >
-              <Linkedin className="h-5 w-5" />
+              <Linkedin className="h-5 w-5 mt-px ml-px" />
             </Link>
           </li>
         </ul>
-        <p className="text-sm text-muted-foreground" aria-label="Last updated timestamp" title={lastModified.toLocaleString()}>
-          Last updated <time dateTime={lastModified.toISOString()}>{formatRelative(lastModified, new Date(), { weekStartsOn: 1 })}</time>
-        </p>
+        <LastUpdated lastModifiedISO={lastModified.toISOString()} />
       </div>
     </footer>
   );
