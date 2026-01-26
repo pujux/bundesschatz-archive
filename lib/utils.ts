@@ -28,3 +28,6 @@ export const DEFAULT_TAB: TabValue = "chart";
 export type BondData = {
   Date: string;
 } & Record<BondKey, number>;
+
+export const isTabValue = (value: string): value is TabValue => TAB_VALUES.includes(value as TabValue);
+export const isBondKey = (value: string): value is BondKey => BOND_TYPES.some((bond) => bond.value === value);

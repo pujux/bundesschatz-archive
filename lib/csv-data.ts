@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { parse } from "csv-parse";
 import path from "path";
-import type { BondData, BondKey } from "./utils";
+import { isBondKey, type BondData } from "./utils";
 
 type CSVData = {
   "Product Key": string;
@@ -17,16 +17,21 @@ function transformCSVData(data: CSVData[]): BondData[] {
 
   let currentItem: Partial<BondData> = {};
   for (const item of data) {
+    // new item started
     if (!currentItem.Date) {
       currentItem.Date = item.Date;
     }
 
     if (currentItem.Date !== item.Date) {
+      // item ended, reset `currentItem`
       transformedData.push(currentItem as BondData);
       currentItem = {};
     }
 
-    currentItem[`${item["Period Value"]}${item["Period Interval"]}` as BondKey] = Number(item["Interest Rate"]);
+    const bondKey = `${item["Period Value"]}${item["Period Interval"]}`;
+    if (isBondKey(bondKey)) {
+      currentItem[bondKey] = Number(item["Interest Rate"]);
+    }
   }
 
   transformedData.push(currentItem as BondData);
