@@ -92,6 +92,7 @@ async function fetchData() {
     console.log(`Appended ${sorted.length} new row(s) to CSV successfully.`);
   } catch (err) {
     console.error("An error occurred while fetching data:", err);
+    process.exitCode = 1;
   }
 }
 
