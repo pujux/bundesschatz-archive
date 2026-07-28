@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Disclaimer() {
   return (
-    <div className="w-full border-t bg-white">
+    <div className="w-full border-t bg-card">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col justify-between gap-2 md:gap-4">
         <p className="text-sm text-pretty text-muted-foreground">
           Bundesschatz Archive is an independent, privately operated information project. It is not affiliated with, endorsed by, or operated on
@@ -15,7 +15,7 @@ export function Disclaimer() {
             href="https://www.sparzinsen.at/?s=bundesschatz"
             target="_blank"
             rel="noreferrer"
-            className="border-b border-muted-foreground hover:border-[#c8102e] hover:text-[#c8102e] transition-colors"
+            className="border-b border-muted-foreground hover:border-brand hover:text-brand transition-colors"
           >
             different source
           </Link>
@@ -25,7 +25,7 @@ export function Disclaimer() {
             href="https://github.com/MichelKSteinbauer"
             target="_blank"
             rel="noreferrer"
-            className="border-b border-muted-foreground hover:border-[#c8102e] hover:text-[#c8102e] transition-colors"
+            className="border-b border-muted-foreground hover:border-brand hover:text-brand transition-colors"
           >
             Michael Karl Steinbauer
           </Link>

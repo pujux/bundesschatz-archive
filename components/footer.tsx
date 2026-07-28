@@ -7,14 +7,14 @@ export async function Footer() {
   const lastModified = await getLastModified();
 
   return (
-    <footer className="w-full border-t bg-white">
+    <footer className="w-full border-t bg-card">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-wrap sm:flex-row items-center justify-between gap-2 md:gap-4">
         <p className="text-sm text-muted-foreground">
           Built with ❤️ by{" "}
           <Link
             href="https://pufler.dev"
             target="_blank"
-            className="font-medium text-foreground border-b border-foreground hover:border-[#c8102e] hover:text-[#c8102e] transition-colors"
+            className="font-medium text-foreground border-b border-foreground hover:border-brand hover:text-brand transition-colors"
             aria-label="Visit Julian Pufler's website"
           >
             Julian Pufler
@@ -25,7 +25,7 @@ export async function Footer() {
             <Link
               href="https://github.com/pujux"
               target="_blank"
-              className="text-muted-foreground hover:text-[#c8102e] transition-colors border-2 border-muted-foreground hover:border-[#c8102e] rounded-lg p-0.5 flex items-center"
+              className="text-muted-foreground hover:text-brand transition-colors border-2 border-muted-foreground hover:border-brand rounded-lg p-0.5 flex items-center"
               aria-label="Visit Julian Pufler's GitHub profile"
             >
               <Github className="h-5 w-5 mt-px ml-px" />
@@ -35,7 +35,7 @@ export async function Footer() {
             <Link
               href="https://www.linkedin.com/in/julianpufler/"
               target="_blank"
-              className="text-muted-foreground hover:text-[#c8102e] transition-colors border-2 border-muted-foreground hover:border-[#c8102e] rounded-lg p-0.5 flex items-center"
+              className="text-muted-foreground hover:text-brand transition-colors border-2 border-muted-foreground hover:border-brand rounded-lg p-0.5 flex items-center"
               aria-label="Visit Julian Pufler's LinkedIn profile"
             >
               <Linkedin className="h-5 w-5 mt-px ml-px" />

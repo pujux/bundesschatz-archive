@@ -5,14 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { DATE_PRESETS, presetRange, type DateRangeValue } from "@/lib/date-presets";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface DateRangePickerProps {
   date: DateRange;
   setDate: (date: DateRange) => void;
-  onReset?: () => void;
+  fullRange: DateRangeValue;
 }
 
-export function DateRangePicker({ date, setDate, onReset }: DateRangePickerProps) {
+export function DateRangePicker({ date, setDate, fullRange }: DateRangePickerProps) {
+  const twoMonths = useMediaQuery("(min-width: 640px)");
+
   return (
     <div className="grid gap-2">
       <Popover>
@@ -22,33 +26,37 @@ export function DateRangePicker({ date, setDate, onReset }: DateRangePickerProps
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                  {format(date.from, "dd.MM.yyyy")} - {format(date.to, "dd.MM.yyyy")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, "dd.MM.yyyy")
               )
             ) : (
               <span>Pick a date range</span>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
+        <PopoverContent className="w-auto max-h-[80vh] overflow-y-auto p-0" align="end" collisionPadding={8}>
+          <div className="flex flex-wrap gap-1 border-b p-2" role="group" aria-label="Date range presets">
+            {DATE_PRESETS.map(({ label }) => (
+              <Button key={label} variant="outline" size="sm" className="h-7 flex-1 text-xs" onClick={() => setDate(presetRange(label, fullRange))}>
+                {label}
+              </Button>
+            ))}
+          </div>
           <Calendar
             required
             autoFocus
-            timeZone="UTC"
             mode="range"
+            captionLayout="dropdown"
+            startMonth={fullRange.from}
+            endMonth={fullRange.to}
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDate}
-            numberOfMonths={2}
+            numberOfMonths={twoMonths ? 2 : 1}
             weekStartsOn={1}
           />
-          {onReset && (
-            <Button variant="outline" onClick={onReset} className="text-xs absolute m-[0_auto] left-0 right-0 top-3.5 w-14 h-7">
-              Reset
-            </Button>
-          )}
         </PopoverContent>
       </Popover>
     </div>

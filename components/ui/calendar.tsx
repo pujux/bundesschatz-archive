@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentProps } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronDown, ChevronLeft } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
@@ -13,12 +13,15 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
+      className={cn("relative p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row",
         month: "space-y-4 text-center mx-2",
         month_caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "inline-flex items-center gap-1 whitespace-nowrap text-sm font-medium",
+        dropdowns: "flex items-center justify-center gap-1",
+        dropdown_root: "relative inline-flex items-center gap-0.5 rounded-md border px-2 py-0.5",
+        dropdown: "absolute inset-0 cursor-pointer opacity-0",
         nav: "space-x-1 flex items-center",
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
@@ -48,7 +51,12 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ...classNames,
       }}
       components={{
-        Chevron: ({ ...props }) => <ChevronLeft className={cn("h-4 w-4", props.orientation === "right" && "rotate-180")} />,
+        Chevron: ({ ...props }) =>
+          props.orientation === "down" ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className={cn("h-4 w-4", props.orientation === "right" && "rotate-180")} />
+          ),
       }}
       {...props}
     />

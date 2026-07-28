@@ -79,7 +79,7 @@ export function Dashboard({ dataPromise }: DashboardProps) {
               if (!range?.from || !range?.to) return;
               setDateRange(range);
             }}
-            onReset={() => setDateRange(defaultRange)}
+            fullRange={defaultRange}
           />
         </div>
 

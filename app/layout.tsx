@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <script defer src="https://cloud.umami.is/script.js" data-website-id="493778c3-89f0-4689-b635-228a6788d8e4" />
       </head>
-      <body className="min-h-screen flex flex-col bg-slate-50">
+      <body className="min-h-screen flex flex-col bg-background">
         {children}
         <Footer />
       </body>

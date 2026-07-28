@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-const skeletonBlock = "animate-pulse rounded-md bg-slate-200/80";
+const skeletonBlock = "animate-pulse rounded-md bg-muted-foreground/20";
 
 export function DashboardSkeleton() {
   return (

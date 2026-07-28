@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import { BOND_TYPES, type BondKey, cn, sortBondList } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
 import { useBondQueryState } from "@/hooks/query-state";
@@ -26,14 +26,12 @@ export function BondSelector() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open} className="w-50 justify-between">
-          Select bonds...
+          {selected.length === BOND_TYPES.length ? "All bonds" : `${selected.length} of ${BOND_TYPES.length} bonds`}
           <Check className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-50 p-0">
         <Command>
-          <CommandInput placeholder="Search bonds..." className="h-9" />
-          <CommandEmpty>No bonds found.</CommandEmpty>
           <CommandGroup>
             {BOND_TYPES.map((bond) => (
               <CommandItem key={bond.value} onSelect={() => toggleSelection(bond.value)}>

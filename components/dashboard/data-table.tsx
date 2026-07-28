@@ -37,9 +37,9 @@ export function DataTable({ data, selectedBonds }: DataTableProps) {
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
+              {headerGroup.headers.map((header, index) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className={index === 0 ? "sticky left-0 z-10 bg-card" : undefined}>
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 );
@@ -51,8 +51,8 @@ export function DataTable({ data, selectedBonds }: DataTableProps) {
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="py-3.5">
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="text-center">
+                {row.getVisibleCells().map((cell, index) => (
+                  <TableCell key={cell.id} className={index === 0 ? "sticky left-0 z-10 bg-card text-center" : "text-center"}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -82,7 +82,25 @@ export function DataTable({ data, selectedBonds }: DataTableProps) {
             <ChevronsRight className="h-5 w-5" />
           </Button>
         </div>
-        <div></div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground whitespace-nowrap">
+            Page {table.getState().pagination.pageIndex + 1} of {Math.max(table.getPageCount(), 1)}
+          </span>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="hidden sm:inline">Rows</span>
+            <select
+              className="h-9 rounded-md border bg-card px-2 text-sm text-foreground"
+              value={table.getState().pagination.pageSize}
+              onChange={(e) => table.setPageSize(Number(e.target.value))}
+            >
+              {[8, 20, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
     </>
   );
