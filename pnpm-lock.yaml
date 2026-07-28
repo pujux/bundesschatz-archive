@@ -66,6 +66,9 @@ importers:
       react-day-picker:
         specifier: ^9.13.0
         version: 9.13.0(react@19.2.3)
+      react-dom:
+        specifier: ^19.2.3
+        version: 19.2.3(react@19.2.3)
       recharts:
         specifier: ^3.6.0
         version: 3.6.0(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react-is@18.3.1)(react@19.2.3)(redux@5.0.1)

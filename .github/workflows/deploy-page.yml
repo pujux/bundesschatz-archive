@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # full history so the build can read the CSV's last commit date
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -59,6 +62,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Run tests
+        run: pnpm test
 
       - name: Build Page
         run: pnpm build

@@ -1,7 +1,8 @@
 import { promises as fs } from "fs";
+import { execSync } from "child_process";
 import { parse } from "csv-parse";
 import path from "path";
-import { isBondKey, type BondData } from "./utils";
+import { isBondKey, type BondData } from "./utils.ts";
 
 type CSVData = {
   "Product Key": string;
@@ -12,20 +13,17 @@ type CSVData = {
   Green: string;
 };
 
-function transformCSVData(data: CSVData[]): BondData[] {
+export function transformCSVData(data: CSVData[]): BondData[] {
   const transformedData: BondData[] = [];
 
   let currentItem: Partial<BondData> = {};
   for (const item of data) {
-    // new item started
-    if (!currentItem.Date) {
-      currentItem.Date = item.Date;
-    }
-
     if (currentItem.Date !== item.Date) {
-      // item ended, reset `currentItem`
-      transformedData.push(currentItem as BondData);
-      currentItem = {};
+      // date changed, start a new item
+      if (currentItem.Date) {
+        transformedData.push(currentItem as BondData);
+      }
+      currentItem = { Date: item.Date };
     }
 
     const bondKey = `${item["Period Value"]}${item["Period Interval"]}`;
@@ -34,14 +32,28 @@ function transformCSVData(data: CSVData[]): BondData[] {
     }
   }
 
-  transformedData.push(currentItem as BondData);
+  if (currentItem.Date) {
+    transformedData.push(currentItem as BondData);
+  }
 
   return transformedData;
 }
 
 export async function getLastModified() {
+  const csvPath = path.join(process.cwd(), "bundesschatz.csv");
+
+  // The fs mtime in CI is the checkout time, which would show the build time
+  // instead of when the data last changed — prefer the git commit time.
   try {
-    const csvPath = path.join(process.cwd(), "bundesschatz.csv");
+    const gitDate = execSync("git log -1 --format=%cI -- bundesschatz.csv", { encoding: "utf8" }).trim();
+    if (gitDate) {
+      return new Date(gitDate);
+    }
+  } catch {
+    // not a git checkout — fall through to the file mtime
+  }
+
+  try {
     const metadata = await fs.stat(csvPath);
     return metadata.mtime;
   } catch (error) {

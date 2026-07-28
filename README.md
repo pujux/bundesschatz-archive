@@ -6,7 +6,7 @@ Historic return rates from bonds available at https://bundesschatz.at, shown as 
 
 - Interactive chart and data table for multiple bond terms.
 - Date-range filtering and tabbed chart/table views.
-- Data sourced automatically from https://bundesschatz.at on a daily basis.
+- Data sourced automatically from https://bundesschatz.at every weekday via a scheduled GitHub Actions workflow.
 
 ## Requirements
 
@@ -46,7 +46,7 @@ pnpm lint
 
 ## Data
 
-The app reads `bundesschatz.csv` at runtime and transforms it into chart/table rows.
+The app reads `bundesschatz.csv` at build time and transforms it into chart/table rows.
 
 CSV columns:
 

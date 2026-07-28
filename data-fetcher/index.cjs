@@ -1,7 +1,10 @@
 const fs = require("node:fs");
+const path = require("node:path");
 
-const csvFilePath = "bundesschatz.csv";
+const CSV_FILE_PATH = path.join(__dirname, "..", "bundesschatz.csv");
 const apiUrl = "https://www.bundesschatz.at/customer-backend/api/public-products";
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 function csvEscape(value) {
   const s = String(value);
@@ -28,6 +31,68 @@ function loadExistingLines(filePath) {
   return set;
 }
 
+// Malformed products abort the run: a partially-filled row would otherwise be
+// committed to the CSV by CI and permanently corrupt the dataset.
+function buildNewLines(data, existing) {
+  if (!Array.isArray(data)) {
+    throw new Error("API payload is not an array");
+  }
+  if (data.length === 0) {
+    throw new Error("API payload is an empty array");
+  }
+
+  const newRows = [];
+  const seen = new Set();
+
+  for (const product of data) {
+    const { productDisplayInfo, interestRates } = product ?? {};
+
+    if (!productDisplayInfo) {
+      throw new Error(`Product is missing productDisplayInfo: ${JSON.stringify(product)}`);
+    }
+
+    const { productKey, periodInterval, periodValue, green } = productDisplayInfo;
+
+    if (typeof productKey !== "string" || !productKey) {
+      throw new Error(`Product has invalid productKey: ${JSON.stringify(productDisplayInfo)}`);
+    }
+    if (typeof periodInterval !== "string" || !periodInterval) {
+      throw new Error(`Product ${productKey} has invalid periodInterval`);
+    }
+    if (typeof periodValue !== "number" || !Number.isFinite(periodValue)) {
+      throw new Error(`Product ${productKey} has invalid periodValue`);
+    }
+    if (typeof green !== "boolean") {
+      throw new Error(`Product ${productKey} has invalid green flag`);
+    }
+    if (!Array.isArray(interestRates)) {
+      throw new Error(`Product ${productKey} has invalid interestRates`);
+    }
+
+    for (const rate of interestRates) {
+      const { date, interestRate } = rate ?? {};
+
+      if (typeof date !== "string" || !DATE_PATTERN.test(date)) {
+        throw new Error(`Product ${productKey} has a rate with an invalid date: ${JSON.stringify(rate)}`);
+      }
+      if (typeof interestRate !== "number" || !Number.isFinite(interestRate)) {
+        throw new Error(`Product ${productKey} has a rate with an invalid interestRate: ${JSON.stringify(rate)}`);
+      }
+
+      const line = [productKey, periodInterval, periodValue, date, interestRate, green].map(csvEscape).join(",");
+
+      if (!existing.has(line) && !seen.has(line)) {
+        seen.add(line);
+        newRows.push({ date, line });
+      }
+    }
+  }
+
+  return newRows
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
+    .map((row) => row.line);
+}
+
 async function fetchData() {
   try {
     const res = await fetch(apiUrl);
@@ -35,59 +100,22 @@ async function fetchData() {
       throw new Error(`HTTP ${res.status} ${res.statusText}`);
     }
 
-    const data = await res.json().then((json) => json?.data);
+    const json = await res.json();
+    const existing = loadExistingLines(CSV_FILE_PATH);
+    const sorted = buildNewLines(json?.data, existing);
 
-    if (!data) {
-      throw new Error("No data returned from API");
-    }
-
-    const existing = loadExistingLines(csvFilePath);
-
-    const newLines = new Set();
-
-    for (const product of data) {
-      const { productDisplayInfo, interestRates } = product ?? {};
-
-      if (!productDisplayInfo || !interestRates?.length) {
-        continue;
-      }
-
-      const { productKey, periodInterval, periodValue, green } = productDisplayInfo;
-
-      for (const rate of interestRates) {
-        const { date, interestRate } = rate ?? {};
-
-        if (!date) {
-          continue;
-        }
-
-        const line = [productKey, periodInterval, periodValue, date, interestRate, green].map(csvEscape).join(",");
-
-        if (!existing.has(line)) {
-          newLines.add(line);
-        }
-      }
-    }
-
-    if (newLines.size === 0) {
+    if (sorted.length === 0) {
       console.log("No new rows to append.");
       return;
     }
 
-    // Sort by date (4th column)
-    const sorted = Array.from(newLines).sort((a, b) => {
-      const da = a.split(",", 5)[3];
-      const db = b.split(",", 5)[3];
-      if (da < db) return -1;
-      if (da > db) return 1;
-      return 0;
-    });
-
     const needsLeadingNewline =
-      fs.existsSync(csvFilePath) && fs.statSync(csvFilePath).size > 0 && !fs.readFileSync(csvFilePath).subarray(-1).equals(Buffer.from("\n"));
+      fs.existsSync(CSV_FILE_PATH) &&
+      fs.statSync(CSV_FILE_PATH).size > 0 &&
+      !fs.readFileSync(CSV_FILE_PATH).subarray(-1).equals(Buffer.from("\n"));
 
     const prefix = needsLeadingNewline ? "\n" : "";
-    fs.appendFileSync(csvFilePath, prefix + sorted.join("\n") + "\n", "utf8");
+    fs.appendFileSync(CSV_FILE_PATH, prefix + sorted.join("\n") + "\n", "utf8");
 
     console.log(`Appended ${sorted.length} new row(s) to CSV successfully.`);
   } catch (err) {
@@ -96,4 +124,8 @@ async function fetchData() {
   }
 }
 
-fetchData();
+module.exports = { csvEscape, loadExistingLines, buildNewLines, CSV_FILE_PATH };
+
+if (require.main === module) {
+  fetchData();
+}

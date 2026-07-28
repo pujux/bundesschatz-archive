@@ -18,6 +18,10 @@ export function Dashboard({ dataPromise }: DashboardProps) {
   const data = use(dataPromise);
 
   const defaultRange = useMemo(() => {
+    if (data.length === 0) {
+      const today = new Date(new Date().toDateString());
+      return { from: today, to: today };
+    }
     return {
       from: new Date(new Date(data[0].Date).toDateString()),
       to: new Date(new Date(data[data.length - 1].Date).toDateString()),
@@ -29,6 +33,10 @@ export function Dashboard({ dataPromise }: DashboardProps) {
   const [dateRange, setDateRange] = useDateRangeQueryState(defaultRange);
 
   const rangeData = useMemo(() => {
+    if (data.length === 0) {
+      return [];
+    }
+
     return data.filter((item) => {
       const itemDate = new Date(new Date(item.Date).toDateString());
 
@@ -39,6 +47,14 @@ export function Dashboard({ dataPromise }: DashboardProps) {
       return true;
     });
   }, [data, dateRange]);
+
+  if (data.length === 0) {
+    return (
+      <main className="grow w-full space-y-4 p-4 md:p-8 py-6 max-w-7xl mx-auto">
+        <p className="text-muted-foreground">No data available.</p>
+      </main>
+    );
+  }
 
   return (
     <main className="grow w-full space-y-4 p-4 md:p-8 py-6 max-w-7xl mx-auto">

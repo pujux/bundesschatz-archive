@@ -2,117 +2,42 @@
 
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BOND_TYPES, type BondData } from "@/lib/utils";
-import type { ColumnDef } from "@tanstack/react-table";
+import { BOND_TYPES, type BondData, type BondKey } from "@/lib/utils";
+import type { Column, ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<BondData, Date | string>[] = [
+function SortableHeader({ column, label }: { column: Column<BondData, unknown>; label: string }) {
+  return (
+    <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
+      {label}
+      {column.getIsSorted() === false ? (
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      ) : column.getIsSorted() === "asc" ? (
+        <ArrowDown className="ml-2 h-4 w-4" />
+      ) : column.getIsSorted() === "desc" ? (
+        <ArrowUp className="ml-2 h-4 w-4" />
+      ) : null}
+    </Button>
+  );
+}
+
+function bondColumn(bond: BondKey, label: string): ColumnDef<BondData, number> {
+  return {
+    id: bond,
+    // sort on the numeric rate, render with the percent suffix
+    accessorFn: (row) => row[bond],
+    cell: ({ getValue }) => {
+      const rate = getValue();
+      return rate == null ? "–" : `${rate}%`;
+    },
+    header: ({ column }) => <SortableHeader column={column} label={label} />,
+  };
+}
+
+export const columns: ColumnDef<BondData, unknown>[] = [
   {
     id: "Date",
     accessorKey: "Date",
-    accessorFn: (row) => row.Date,
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
-          Date
-          {column.getIsSorted() === false ? (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : null}
-        </Button>
-      );
-    },
+    header: ({ column }) => <SortableHeader column={column} label="Date" />,
   },
-  {
-    id: "1M",
-    accessorFn: (row) => row["1M"] + "%",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
-          {BOND_TYPES.find((bond) => bond.value === "1M")?.label}
-          {column.getIsSorted() === false ? (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : null}
-        </Button>
-      );
-    },
-  },
-  {
-    id: "6M",
-    accessorFn: (row) => row["6M"] + "%",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
-          {BOND_TYPES.find((bond) => bond.value === "6M")?.label}
-          {column.getIsSorted() === false ? (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : null}
-        </Button>
-      );
-    },
-  },
-  {
-    id: "12M",
-    accessorFn: (row) => row["12M"] + "%",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
-          {BOND_TYPES.find((bond) => bond.value === "12M")?.label}
-          {column.getIsSorted() === false ? (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : null}
-        </Button>
-      );
-    },
-  },
-  {
-    id: "4Y",
-    accessorFn: (row) => row["4Y"] + "%",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
-          {BOND_TYPES.find((bond) => bond.value === "4Y")?.label}
-          {column.getIsSorted() === false ? (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : null}
-        </Button>
-      );
-    },
-  },
-  {
-    id: "10Y",
-    accessorFn: (row) => row["10Y"] + "%",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={column.getToggleSortingHandler()} className="w-full">
-          {BOND_TYPES.find((bond) => bond.value === "10Y")?.label}
-          {column.getIsSorted() === false ? (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : null}
-        </Button>
-      );
-    },
-  },
+  ...BOND_TYPES.map((bond) => bondColumn(bond.value, bond.label) as ColumnDef<BondData, unknown>),
 ];
