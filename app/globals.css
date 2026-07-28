@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -104,9 +106,9 @@
     --radius: 0.5rem;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
+  /* toggled by the inline script in layout.tsx and the ThemeToggle button */
+  :root.dark {
+    color-scheme: dark;
       --background: 240 10% 3.9%;
       --foreground: 0 0% 98%;
       --card: 240 8% 8%;
@@ -133,7 +135,6 @@
       --chart-4: 43 74% 60%;
       --chart-5: 27 87% 67%;
       --brand: 350 90% 62%;
-    }
   }
 }
 
